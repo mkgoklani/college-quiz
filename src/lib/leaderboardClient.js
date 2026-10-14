@@ -2,22 +2,19 @@ import { createClient } from '@supabase/supabase-js';
 
 // If Supabase environment variables are not set or during local test,
 // we provide a robust LocalStorage fallback so the app works seamlessly out of the box!
-const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || 'https://ltpmylocazpzhsyxphxw.supabase.co').trim();
-const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ZcvLmVhpJoCsSJYAx8dhvg_LlXfF31A').trim();
+const envUrl = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL;
+const envKey = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const isSupabaseConfigured = Boolean(
-  supabaseUrl &&
-  supabaseAnonKey &&
-  supabaseUrl.startsWith('http')
-);
+const supabaseUrl = (envUrl || 'https://ltpmylocazpzhsyxphxw.supabase.co').trim();
+const supabaseAnonKey = (envKey || 'sb_publishable_ZcvLmVhpJoCsSJYAx8dhvg_LlXfF31A').trim();
+
+export const isSupabaseConfigured = true;
 
 let client = null;
-if (isSupabaseConfigured) {
-  try {
-    client = createClient(supabaseUrl, supabaseAnonKey);
-  } catch (e) {
-    console.error('Supabase init error:', e);
-  }
+try {
+  client = createClient(supabaseUrl, supabaseAnonKey);
+} catch (e) {
+  console.error('Supabase init error:', e);
 }
 
 export const supabase = client;
