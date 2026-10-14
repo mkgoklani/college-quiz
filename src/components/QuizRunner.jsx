@@ -63,6 +63,19 @@ export default function QuizRunner({ participant, onQuizComplete }) {
     }, 1100);
   };
 
+  const handleFinishEarly = () => {
+    if (window.confirm('Finish and submit your score now?')) {
+      clearInterval(timerRef.current);
+      const totalTimeSeconds = (Date.now() - startTimeRef.current) / 1000;
+      onQuizComplete({
+        score: totalScore,
+        correctCount: correctCount,
+        totalQuestions: QUIZ_QUESTIONS.length,
+        totalTimeTaken: totalTimeSeconds
+      });
+    }
+  };
+
   const goToNextQuestion = (earnedPoints, isCorrect) => {
     if (currentIndex + 1 < QUIZ_QUESTIONS.length) {
       setCurrentIndex((prev) => prev + 1);
@@ -174,6 +187,22 @@ export default function QuizRunner({ participant, onQuizComplete }) {
             {currentQuestion.explanation}
           </div>
         )}
+
+        <div style={{ marginTop: '1.5rem', textAlign: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '1rem' }}>
+          <button
+            onClick={handleFinishEarly}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--text-muted)',
+              fontSize: '0.825rem',
+              cursor: 'pointer',
+              textDecoration: 'underline'
+            }}
+          >
+            Finish & Submit Score Now
+          </button>
+        </div>
       </div>
     </div>
   );

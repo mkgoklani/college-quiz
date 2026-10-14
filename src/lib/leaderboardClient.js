@@ -1,12 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// If Supabase environment variables are not set or during local test,
-// we provide a robust LocalStorage fallback so the app works seamlessly out of the box!
-const envUrl = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL;
-const envKey = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-const supabaseUrl = (envUrl || 'https://ltpmylocazpzhsyxphxw.supabase.co').trim();
-const supabaseAnonKey = (envKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0cG15bG9jYXpwemhzeXhwaHh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NTY3NzMsImV4cCI6MjEwNzUzMjc3M30.44pHnnZZgZ5G8a4FIwET--uNnMp6HOaFgaym5hLc8jg').trim();
+// Direct verified Supabase configuration (bypasses any misconfigured Vercel environment variables)
+const supabaseUrl = 'https://ltpmylocazpzhsyxphxw.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0cG15bG9jYXpwemhzeXhwaHh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NTY3NzMsImV4cCI6MjEwNzUzMjc3M30.44pHnnZZgZ5G8a4FIwET--uNnMp6HOaFgaym5hLc8jg';
 
 export const isSupabaseConfigured = true;
 
