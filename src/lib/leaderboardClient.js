@@ -2,35 +2,25 @@ import { createClient } from '@supabase/supabase-js';
 
 // If Supabase environment variables are not set or during local test,
 // we provide a robust LocalStorage fallback so the app works seamlessly out of the box!
-const rawUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
-const rawKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
-
-function isValidHttpUrl(string) {
-  try {
-    const url = new URL(string);
-    return url.protocol === 'http:' || url.protocol === 'https:';
-  } catch (_) {
-    return false;
-  }
-}
+const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || 'https://ltpmylocazpzhsyxphxw.supabase.co').trim();
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_ZcvLmVhpJoCsSJYAx8dhvg_LlXfF31A').trim();
 
 export const isSupabaseConfigured = Boolean(
-  rawUrl &&
-  rawKey &&
-  isValidHttpUrl(rawUrl) &&
-  !rawUrl.includes('your-project')
+  supabaseUrl &&
+  supabaseAnonKey &&
+  supabaseUrl.startsWith('http')
 );
 
-let supabaseClient = null;
+let client = null;
 if (isSupabaseConfigured) {
   try {
-    supabaseClient = createClient(rawUrl, rawKey);
-  } catch (err) {
-    console.error('Failed to initialize Supabase client:', err);
+    client = createClient(supabaseUrl, supabaseAnonKey);
+  } catch (e) {
+    console.error('Supabase init error:', e);
   }
 }
 
-export const supabase = supabaseClient;
+export const supabase = client;
 
 // Local fallback keys for live demo or offline intranet mode
 const LOCAL_STORAGE_KEY = 'college_quiz_scores';
