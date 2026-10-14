@@ -33,6 +33,28 @@ export async function submitScore({ name, teamName, collegeName, score, correctC
     total_time_taken: Number(totalTimeTaken.toFixed(1))
   };
 
+  // Try standard direct REST POST first (foolproof on all mobile networks)
+  try {
+    const postRes = await fetch(`${supabaseUrl}/rest/v1/leaderboard`, {
+      method: 'POST',
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify(record)
+    });
+
+    if (postRes.ok) {
+      const inserted = await postRes.json();
+      saveToLocalStorage(record);
+      return { success: true, record: inserted[0] || record, fallback: false };
+    }
+  } catch (err) {
+    console.warn('REST insert failed, trying supabase-js:', err);
+  }
+
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase
@@ -58,6 +80,27 @@ export async function submitScore({ name, teamName, collegeName, score, correctC
 }
 
 export async function fetchLeaderboard() {
+  // Direct REST fetch guarantees it works on all mobile & desktop browsers
+  try {
+    const res = await fetch(
+      `${supabaseUrl}/rest/v1/leaderboard?select=*&order=score.desc,total_time_taken.asc&limit=100`,
+      {
+        headers: {
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`
+        }
+      }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        return data;
+      }
+    }
+  } catch (err) {
+    console.warn('REST fetch error, trying supabase-js:', err);
+  }
+
   if (isSupabaseConfigured && supabase) {
     try {
       const { data, error } = await supabase
@@ -75,7 +118,6 @@ export async function fetchLeaderboard() {
     }
   }
 
-  // Fallback to local
   return getLocalStorageScores();
 }
 
