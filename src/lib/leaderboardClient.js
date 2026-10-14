@@ -24,15 +24,13 @@ const LOCAL_STORAGE_KEY = 'college_quiz_scores';
 
 export async function submitScore({ name, teamName, collegeName, score, correctCount, totalQuestions, totalTimeTaken }) {
   const record = {
-    id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
     name: name.trim(),
     team_name: teamName.trim(),
     college_name: collegeName.trim(),
     score: Math.round(score),
     correct_count: correctCount,
     total_questions: totalQuestions,
-    total_time_taken: Number(totalTimeTaken.toFixed(1)),
-    created_at: new Date().toISOString()
+    total_time_taken: Number(totalTimeTaken.toFixed(1))
   };
 
   if (isSupabaseConfigured && supabase) {
