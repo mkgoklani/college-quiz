@@ -14,10 +14,21 @@ export default function LeaderboardDashboard({ onBackToQuiz, onOpenQRModal }) {
 
   useEffect(() => {
     loadData();
+    // 1. Real-time WebSocket subscription
     const unsubscribe = subscribeToLeaderboard((updatedScores) => {
-      setScores(updatedScores || []);
+      if (updatedScores) setScores(updatedScores);
     });
-    return () => unsubscribe();
+
+    // 2. Continuous 3-second polling fallback (guarantees updates even if WebSockets are blocked)
+    const interval = setInterval(async () => {
+      const data = await fetchLeaderboard();
+      if (data && data.length > 0) setScores(data);
+    }, 3000);
+
+    return () => {
+      unsubscribe();
+      clearInterval(interval);
+    };
   }, []);
 
   return (
